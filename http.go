@@ -9,11 +9,11 @@ import (
 
 func httpGetRequest(url string) []byte {
 	resp, err := http.Get(url)
-	checkForErrors(err)
+	checkForErrors(ErrorParams{err: err, callerNum: 1})
 
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
-	checkForErrors(err)
+	checkForErrors(ErrorParams{err: err, callerNum: 1})
 
 	return body
 }
@@ -26,7 +26,7 @@ func httpPutRequest(urlStr string, data []byte) *http.Response {
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
-	checkForErrors(err)
+	checkForErrors(ErrorParams{err: err, callerNum: 1})
 
 	defer resp.Body.Close()
 
@@ -41,13 +41,13 @@ func httpPutRequestRedirect(urlStr string, data string) {
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
-	checkForErrors(err)
+	checkForErrors(ErrorParams{err: err, callerNum: 1})
 
 	if resp.StatusCode == http.StatusTemporaryRedirect {
 		u, err := resp.Location()
 
 		if err != nil {
-			checkForErrors(err)
+			checkForErrors(ErrorParams{err: err, callerNum: 1})
 		} else {
 			httpPutRequestRedirect(u.String(), data)
 		}
