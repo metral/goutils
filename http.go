@@ -3,14 +3,12 @@ package goutils
 import (
 	"bytes"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 )
 
 func httpGetRequest(url string) []byte {
 	resp, err := http.Get(url)
-	log.Printf("test")
 	checkForErrors(ErrorParams{err: err, callerNum: 1})
 
 	defer resp.Body.Close()
