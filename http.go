@@ -49,7 +49,7 @@ func HttpPutRequestRedirect(urlStr string, data string) {
 		if err != nil {
 			CheckForErrors(ErrorParams{err: err, callerNum: 1})
 		} else {
-			httpPutRequestRedirect(u.String(), data)
+			HttpPutRequestRedirect(u.String(), data)
 		}
 		resp.Body.Close()
 	}
