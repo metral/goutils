@@ -1,3 +1,4 @@
+package goutils
 
 import (
 	"fmt"
