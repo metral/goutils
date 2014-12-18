@@ -18,10 +18,10 @@ func HttpGetRequest(url string) []byte {
 	return body
 }
 
-func HttpPutRequest(urlStr string, data []byte) *http.Response {
+func HttpCreateJSONRequest(method, urlStr string, data []byte) *http.Response {
 	var req *http.Request
 
-	req, _ = http.NewRequest("PUT", urlStr, bytes.NewBuffer(data))
+	req, _ = http.NewRequest(method, urlStr, bytes.NewBuffer(data))
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
