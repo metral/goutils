@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func httpGetRequest(url string) []byte {
+func HttpGetRequest(url string) []byte {
 	resp, err := http.Get(url)
 	checkForErrors(ErrorParams{err: err, callerNum: 1})
 
@@ -18,7 +18,7 @@ func httpGetRequest(url string) []byte {
 	return body
 }
 
-func httpPutRequest(urlStr string, data []byte) *http.Response {
+func HttpPutRequest(urlStr string, data []byte) *http.Response {
 	var req *http.Request
 
 	req, _ = http.NewRequest("PUT", urlStr, bytes.NewBuffer(data))
@@ -33,7 +33,7 @@ func httpPutRequest(urlStr string, data []byte) *http.Response {
 	return resp
 }
 
-func httpPutRequestRedirect(urlStr string, data string) {
+func HttpPutRequestRedirect(urlStr string, data string) {
 	var req *http.Request
 	req, _ = http.NewRequest("PUT", urlStr, bytes.NewBufferString(data))
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")

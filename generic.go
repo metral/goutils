@@ -13,7 +13,7 @@ type ErrorParams struct {
 }
 
 // check for errors and panic, if found
-func checkForErrors(e ErrorParams) {
+func CheckForErrors(e ErrorParams) {
 	if e.err != nil {
 		pc, fn, line, _ := runtime.Caller(e.callerNum)
 		msg := ""
