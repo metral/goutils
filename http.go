@@ -9,7 +9,7 @@ import (
 type HttpRequestParams struct {
 	HttpRequestType string
 	Url             string
-	Data            string
+	Data            interface{}
 	Headers         map[string]string
 }
 
@@ -27,8 +27,15 @@ func HttpGetRequest(url string) []byte {
 func HttpCreateRequest(p HttpRequestParams) *http.Response {
 	var req *http.Request
 
-	var dataBytes = bytes.NewBufferString(p.Data)
-	req, _ = http.NewRequest(p.HttpRequestType, p.Url, dataBytes)
+	var dataBytes bytes.Buffer
+	switch v := p.Data.(type) {
+	case string:
+		dataBytes = *bytes.NewBufferString(v)
+	case []byte:
+		dataBytes = *bytes.NewBuffer(v)
+	}
+
+	req, _ = http.NewRequest(p.HttpRequestType, p.Url, &dataBytes)
 
 	for k, v := range p.Headers {
 		req.Header.Set(k, v)
