@@ -4,8 +4,14 @@ import (
 	"bytes"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 )
+
+type HttpRequestParams struct {
+	HttpRequestType string
+	Url             string
+	Data            string
+	Headers         map[string]string
+}
 
 func HttpGetRequest(url string) []byte {
 	resp, err := http.Get(url)
@@ -18,11 +24,15 @@ func HttpGetRequest(url string) []byte {
 	return body
 }
 
-func HttpCreateJSONRequest(method, urlStr string, data []byte) *http.Response {
+func HttpCreateRequest(p HttpRequestParams) *http.Response {
 	var req *http.Request
 
-	req, _ = http.NewRequest(method, urlStr, bytes.NewBuffer(data))
-	req.Header.Set("Content-Type", "application/json")
+	var dataBytes = bytes.NewBufferString(p.Data)
+	req, _ = http.NewRequest(p.HttpRequestType, p.Url, dataBytes)
+
+	for k, v := range p.Headers {
+		req.Header.Set(k, v)
+	}
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -30,27 +40,17 @@ func HttpCreateJSONRequest(method, urlStr string, data []byte) *http.Response {
 
 	defer resp.Body.Close()
 
-	return resp
-}
-
-func HttpPutRequestRedirect(urlStr string, data string) {
-	var req *http.Request
-	req, _ = http.NewRequest("PUT", urlStr, bytes.NewBufferString(data))
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Content-Length", strconv.Itoa(len(data)))
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	CheckForErrors(ErrorParams{Err: err, CallerNum: 1})
-
+	// etcd server is on redirect
 	if resp.StatusCode == http.StatusTemporaryRedirect {
 		u, err := resp.Location()
 
 		if err != nil {
 			CheckForErrors(ErrorParams{Err: err, CallerNum: 1})
 		} else {
-			HttpPutRequestRedirect(u.String(), data)
+			p.Url = u.String()
+			HttpCreateRequest(p)
 		}
-		resp.Body.Close()
 	}
+
+	return resp
 }
