@@ -25,7 +25,7 @@ func HttpGetRequest(url string) []byte {
 	return body
 }
 
-func HttpCreateRequest(p HttpRequestParams) *http.Response {
+func HttpCreateRequest(p HttpRequestParams) int {
 	var req *http.Request
 
 	var dataBytes bytes.Buffer
@@ -46,14 +46,9 @@ func HttpCreateRequest(p HttpRequestParams) *http.Response {
 	resp, err := client.Do(req)
 	CheckForErrors(ErrorParams{Err: err, CallerNum: 1})
 
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	log.Printf("HTTP Status: %s\n", resp.Status)
-	log.Printf("HTTP Body: %s\n", body)
-	log.Printf("HTTP Error: %v\n", err)
-
+	switch resp.StatusCode {
 	// etcd server is on redirect
-	if resp.StatusCode == http.StatusTemporaryRedirect {
+	case http.StatusTemporaryRedirect:
 		u, err := resp.Location()
 
 		if err != nil {
@@ -62,7 +57,13 @@ func HttpCreateRequest(p HttpRequestParams) *http.Response {
 			p.Url = u.String()
 			HttpCreateRequest(p)
 		}
+	case 400, 401:
+		body, err := ioutil.ReadAll(resp.Body)
+		log.Printf("HTTP Status: %s\n", resp.Status)
+		log.Printf("HTTP Body: %s\n", body)
+		log.Printf("HTTP Error: %v\n", err)
+		CheckForErrors(ErrorParams{Err: err, CallerNum: 1})
 	}
-
-	return resp
+	defer resp.Body.Close()
+	return resp.StatusCode
 }
