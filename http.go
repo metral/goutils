@@ -47,7 +47,7 @@ func HttpCreateRequest(p HttpRequestParams) *http.Response {
 	CheckForErrors(ErrorParams{Err: err, CallerNum: 1})
 
 	defer resp.Body.Close()
-	body, err := ioutil.Readall(resp.Body)
+	body, err := ioutil.ReadAll(resp.Body)
 	log.Printf("HTTP Status: %s\n", resp.Status)
 	log.Printf("HTTP Body: %v\n", body)
 	log.Printf("HTTP Error: %v\n", err)
