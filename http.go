@@ -49,7 +49,7 @@ func HttpCreateRequest(p HttpRequestParams) *http.Response {
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	log.Printf("HTTP Status: %s\n", resp.Status)
-	log.Printf("HTTP Body: %v\n", body)
+	log.Printf("HTTP Body: %s\n", body)
 	log.Printf("HTTP Error: %v\n", err)
 
 	// etcd server is on redirect
