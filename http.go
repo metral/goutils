@@ -3,7 +3,6 @@ package goutils
 import (
 	"bytes"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -25,10 +24,11 @@ func HttpGetRequest(url string) []byte {
 	return body
 }
 
-func HttpCreateRequest(p HttpRequestParams) int {
+func HttpCreateRequest(p HttpRequestParams) (int, bytes.Buffer) {
 	var req *http.Request
+	var statusCode int
+	var dataBytes, bodyBytes bytes.Buffer
 
-	var dataBytes bytes.Buffer
 	switch v := p.Data.(type) {
 	case string:
 		dataBytes = *bytes.NewBufferString(v)
@@ -57,13 +57,13 @@ func HttpCreateRequest(p HttpRequestParams) int {
 			p.Url = u.String()
 			HttpCreateRequest(p)
 		}
-	case 400, 401, 409, 500:
+	default:
+		statusCode = resp.StatusCode
+
 		body, err := ioutil.ReadAll(resp.Body)
-		log.Printf("HTTP Status: %s\n", resp.Status)
-		log.Printf("HTTP Body: %s\n", body)
-		log.Printf("HTTP Error: %v\n", err)
 		CheckForErrors(ErrorParams{Err: err, CallerNum: 1})
+		bodyBytes = *bytes.NewBuffer(body)
 	}
 	defer resp.Body.Close()
-	return resp.StatusCode
+	return statusCode, bodyBytes
 }
