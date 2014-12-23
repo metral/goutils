@@ -57,7 +57,7 @@ func HttpCreateRequest(p HttpRequestParams) int {
 			p.Url = u.String()
 			HttpCreateRequest(p)
 		}
-	case 400, 401:
+	case 400, 401, 409, 500:
 		body, err := ioutil.ReadAll(resp.Body)
 		log.Printf("HTTP Status: %s\n", resp.Status)
 		log.Printf("HTTP Body: %s\n", body)
