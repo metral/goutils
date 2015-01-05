@@ -13,21 +13,10 @@ type HttpRequestParams struct {
 	Headers         map[string]string
 }
 
-func HttpGetRequest(url string) []byte {
-	resp, err := http.Get(url)
-	CheckForErrors(ErrorParams{Err: err, CallerNum: 1})
-
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	CheckForErrors(ErrorParams{Err: err, CallerNum: 1})
-
-	return body
-}
-
-func HttpCreateRequest(p HttpRequestParams) (int, bytes.Buffer) {
+func HttpCreateRequest(p HttpRequestParams) (int, []byte) {
 	var req *http.Request
 	var statusCode int
-	var dataBytes, bodyBytes bytes.Buffer
+	var dataBytes, bodyBuffer bytes.Buffer
 
 	switch v := p.Data.(type) {
 	case string:
@@ -61,8 +50,8 @@ func HttpCreateRequest(p HttpRequestParams) (int, bytes.Buffer) {
 
 		body, err := ioutil.ReadAll(resp.Body)
 		CheckForErrors(ErrorParams{Err: err, CallerNum: 1})
-		bodyBytes = *bytes.NewBuffer(body)
+		bodyBuffer = *bytes.NewBuffer(body)
 	}
 	defer resp.Body.Close()
-	return statusCode, bodyBytes
+	return statusCode, bodyBuffer.Bytes()
 }
