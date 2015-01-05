@@ -47,7 +47,6 @@ func HttpCreateRequest(p HttpRequestParams) (int, bytes.Buffer) {
 	CheckForErrors(ErrorParams{Err: err, CallerNum: 1})
 
 	switch resp.StatusCode {
-	// etcd server is on redirect
 	case http.StatusTemporaryRedirect:
 		u, err := resp.Location()
 
